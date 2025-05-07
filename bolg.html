@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>技术博客 | Hanzhe</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .article-card {
+            transition: transform 0.2s;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .article-card:hover {
+            transform: translateY(-5px);
+        }
+        #featured-post {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+        }
+        .code-block {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        @media (max-width: 768px) {
+            .navbar-collapse {
+                background: white;
+                padding: 1rem;
+                border-radius: 10px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">技术日志</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#articles">最新文章</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#projects">项目作品</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">关于作者</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5 pt-4">
+        <section id="featured-post" class="row g-4 mb-5 p-4">
+            <div class="col-md-8">
+                <h2 class="display-5 mb-3">最新技术分享</h2>
+                <div id="article-content" class="code-block">
+                    <!-- Markdown内容将通过JavaScript动态加载 -->
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-white p-4 rounded shadow-sm">
+                    <h5>热门标签</h5>
+                    <div class="tag-cloud mt-3" id="tags">
+                        <a href="#" class="badge bg-secondary me-1 mb-1">Python</a>
+                        <a href="#" class="badge bg-secondary me-1 mb-1">算法</a>
+                        <a href="#" class="badge bg-secondary me-1 mb-1">Web开发</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="article-list" class="row row-cols-1 row-cols-md-2 g-4">
+            <!-- 文章卡片将通过JavaScript动态加载 -->
+        </section>
+    </main>
+
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p class="mb-1">© 2024-2025 Hanzhe的技术博客</p>
+            <div class="social-links">
+                <a href="#" class="text-white me-3">GitHub</a>
+                <a href="#" class="text-white me-3">LinkedIn</a>
+                <a href="#" class="text-white">Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/marked/12.0.2/marked.min.js"></script>
+    <script>
+        // 初始化Markdown渲染和代码高亮
+        marked.setOptions({
+            highlight: function(code, lang) {
+                return hljs.highlightAuto(code).value;
+            }
+        });
+
+        // 动态加载文章列表
+        function loadArticleList() {
+            const articles = [
+                { 
+                    title: '快速排序算法详解',
+                    date: '2024-05-20',
+                    path: 'articles/first-post.md',
+                    tags: ['算法', 'Python'],
+                    excerpt: '深入解析快速排序算法的实现原理和时间复杂度分析'
+                }
+            ];
+
+            // 生成文章卡片
+            const articleList = document.getElementById('article-list');
+            articles.forEach(article => {
+                const card = document.createElement('div');
+                card.className = 'col';
+                card.innerHTML = `
+                    <div class="article-card card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">${article.title}</h5>
+                            <div class="text-muted small mb-2">
+                                ${article.date} • 
+                                ${article.tags.map(t => `<span class="badge bg-secondary me-1">${t}</span>`).join('')}
+                            </div>
+                            <p class="card-text">${article.excerpt}</p>
+                            <button onclick="loadArticle('${article.path}')" 
+                                class="btn btn-primary btn-sm">
+                                阅读全文
+                            </button>
+                        </div>
+                    </div>
+                `;
+                articleList.appendChild(card);
+            });
+        }
+
+        // 加载文章内容
+        async function loadArticle(path) {
+            const response = await fetch(path);
+            const mdContent = await response.text();
+            document.getElementById('article-content').innerHTML = marked.parse(mdContent);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 初始化加载
+        loadArticleList();
+        loadArticle('articles/first-post.md');    </script>
+</body>
+</html>
